@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Stream</title>
+</head>
+<body>
+    <img id="video-stream" alt="Video Stream">
+
+    <script>
+        const videoStream = document.getElementById('video-stream');
+        const socket = new WebSocket('ws://localhost:8000/ws/video/consumer/');
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const frame = JSON.parse(data.data).frame
+            console.log(frame)
+            videoStream.src = `data:image/jpeg;base64, ${frame}`;
+        };
+
+        socket.onopen = (event)=>{
+            console.log("connected successfully")
+        }
+
+        socket.addEventListener('error', (event) => {
+            console.error("WebSocket error:", event);
+        });
+
+        socket.onclose = (event) => {
+            console.error('WebSocket closed unexpectedly:', event);
+        };
+    </script>
+</body>
+</html>
